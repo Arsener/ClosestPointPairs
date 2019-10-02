@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 将点的数量初始化为0
     pointNumber = 0;
 
+    // 设置信号槽
     connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clear()));
     connect(ui->mouseButton, SIGNAL(clicked(bool)), this, SLOT(addPointsByMouse()));
     connect(ui->randomButton, SIGNAL(clicked(bool)), this, SLOT(generatePointsRandomly()));
@@ -86,6 +87,7 @@ void MainWindow::generatePointsRandomly(){
         return;
     }
 
+    // 设置相关状态
     painted = true;
     mouse = false;
     pointNumber = inputNumber;
@@ -117,11 +119,16 @@ void MainWindow::naiveMethod(){
     finding = true;
 
     clearLabels();
+    ui->paintedWidget->setLink(false);
+    ui->paintedWidget->setPainted(true);
+    ui->paintedWidget->update();
+    // 设置常规线程对象的一些属性
     nt->setAttr(pointNumber, ui->paintedWidget->getPoints());
+    // 使用常规方法寻找最近点对
     nt->start();
 }
 
-// 在线程中使用常规方法
+// 在线程中使用分治方法
 void MainWindow::mergeMethod(){
     if (finding){
         QMessageBox::warning(this, "Error!", "Busy now.");
@@ -142,11 +149,16 @@ void MainWindow::mergeMethod(){
     finding = true;
 
     clearLabels();
+    ui->paintedWidget->setLink(false);
+    ui->paintedWidget->setPainted(true);
+    ui->paintedWidget->update();
+    // 设置常规线程对象的一些属性
     mt->setAttr(pointNumber, ui->paintedWidget->getPoints());
+    // 使用常规方法寻找最近点对
     mt->start();
 }
 
-// 将最近点对连线
+// 将最近点对连线，同时在label上显示点的数量以及最近点对之间的距离
 void MainWindow::drawLine(Pair p){
     ui->countLabel->setText(QString::number(pointNumber));
     ui->disLabel->setText(QString::number(p.getDis()));
@@ -185,14 +197,15 @@ void MainWindow::addPointsByMouse(){
 // 鼠标点击事件
 void MainWindow::mousePressEvent(QMouseEvent *event){
     if (mouse && event->button() == Qt::LeftButton){
+        // 获取鼠标当前的位置
         const int x = event->x();
         const int y = event->y();
-        int nx = x - 50;
-        int ny = y - 30;
-        if (nx < 0 || ny < 0 || nx > 1100 || ny > 950) return;
+        // 如果当前位置不在可以画点的位置上，退出，不画点
+        if (x < 5 || y < 5 || x > WIDGETWIDTH + 5 || y > WIDGETHEIGHT + 5) return;
 
+        // 在点的数组中添加当前点并画出
         painted = true;
-        ui->paintedWidget->addPoints(nx, ny);
+        ui->paintedWidget->addPoints(x, y);
         pointNumber++;
         clearLabels();
         ui->countLabel->setText(QString::number(pointNumber));

@@ -19,24 +19,24 @@ public:
     MergeThread();
     ~MergeThread();
 
-    Pair closestPair(QPointF *pointX, Point *pointY, int lt, int rt);
+    Pair closestPair(QPointF *pointX, Point *pointY, int lt, int rt);  // 寻找最近点对
     void setAttr(int pointNumber, QPointF* pointX);
 
 signals:
-    void returnResult(Pair);
-    void returnTime(double);
+    void returnResult(Pair);  // 发送最近点对
+    void returnTime(double);  // 发送算法所用时间
 
 protected:
     void run();
 
 private:
-    int pointNumber;
-    QPointF* pointX;
-    double timeCost;
+    int pointNumber;  // 点的数量
+    QPointF* pointX;  // 点数组
+    double timeCost;  // 算法所用时间
 
-    void mergeSortX(QPointF *p, int lt, int rt);
-    void mergeSortY(Point *p, int lt, int rt);
-    double getDis(QPointF a, QPointF b);
+    void mergeSortX(QPointF *p, int lt, int rt);  // 使用归并排序，将点的数组按照x坐标由小到大排序
+    void mergeSortY(Point *p, int lt, int rt);  // 使用归并排序，将点的数组按照y坐标由小到大排序
+    double getDis(QPointF a, QPointF b);  // 计算两点间距
 
 };
 

@@ -10,10 +10,11 @@ MergeThread::~MergeThread()
     delete [] pointX;
 }
 
-
+// 使用归并排序，将点的数组按照x坐标由小到大排序
 void MergeThread::mergeSortX(QPointF *p, int lt, int rt){
     if (lt >= rt) return;
 
+    // 一分为二，递归调用
     int mid = (lt + rt) / 2;
     mergeSortX(p, lt, mid);
     mergeSortX(p, mid + 1, rt);
@@ -45,9 +46,11 @@ void MergeThread::mergeSortX(QPointF *p, int lt, int rt){
     delete [] tmp;
 }
 
+// 使用归并排序，将点的数组按照y坐标由小到大排序
 void MergeThread::mergeSortY(Point *p, int lt, int rt){
     if (lt >= rt) return;
 
+    // 一分为二，递归调用
     int mid = (lt + rt) / 2;
     mergeSortY(p, lt, mid);
     mergeSortY(p, mid + 1, rt);
@@ -101,8 +104,8 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     //多于三个点，先将所有点一分为二
     int mid = (lt + rt) / 2;
     // 将pointY按照划分情况进行划分
-    Point *yLeft = new Point[rt - lt + 1];
-    Point *yRight = new Point[rt - lt + 1];
+    Point *yLeft = new Point[mid - lt + 1];
+    Point *yRight = new Point[rt - mid];
     int l = 0, r = 0;
     for(int i = 0; i <= rt - lt; i++){
         if (pointY[i].i() <= mid) {
@@ -118,14 +121,15 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     // 找到右边的所有点中最近点对
     Pair rightP = closestPair(pointX, yRight, mid + 1, rt);
 
-    // 当前最近点对，并确定delta
+    // 确定当前最近点对，并确定delta
     Pair tmpBestPair;
     if (leftP.getDis() <= rightP.getDis()) tmpBestPair = leftP;
     else tmpBestPair = rightP;
 
     double wallX = pointX[mid].x();
     double delta = tmpBestPair.getDis();
-    // 将在宽度为2 * delta带子中的点放入一个数组中寻找最近点对
+
+    // 将在宽度为2 * delta的带子中的点放入一个数组中寻找最近点对
     Point *yInDelta = new Point[rt - lt + 1];
     // 记录这些点的index
     int *index = new int[rt - lt + 1];
@@ -141,6 +145,7 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     int a = -1, b = -1;
     double minDis = 999999999;
     for(int i = 0; i < cnt; i++){
+        // 每个点只往后比较7个点
         for(int j = i + 1; j <= i + 7 && j < cnt; j++){
             double dis = getDis(yInDelta[i], yInDelta[j]);
             if (minDis > dis){
@@ -156,8 +161,9 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     delete [] yInDelta;
     delete [] index;
 
-    if (minDis > delta) return tmpBestPair;
-    else return Pair(a, b, minDis);
+    // 如果在带子中找到的最近点对是最优解，则返回带子中的最近点对
+    if (minDis < delta) return Pair(a, b, minDis);
+    else return tmpBestPair;
 }
 
 

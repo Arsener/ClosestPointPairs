@@ -19,20 +19,20 @@ public:
     NaiveThread();
     ~NaiveThread();
 
-    Pair closestPair();
+    Pair closestPair();  // 寻找最近点对
     void setAttr(int pointNumber, QPointF* pointf);
 
 signals:
-    void returnResult(Pair);
-    void returnTime(double);
+    void returnResult(Pair);  // 发送最近点对
+    void returnTime(double);  // 发送算法所用时间
 
 protected:
     void run();
 
 private:
-    int pointNumber;
-    QPointF* pointf;
-    double timeCost;
+    int pointNumber;  // 点的数量
+    QPointF* pointf;  // 点数组
+    double timeCost;  // 算法所用时间
 };
 
 #endif // NAIVETHREAD_H

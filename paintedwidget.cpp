@@ -1,6 +1,4 @@
 #include "paintedwidget.h"
-#define WIDGETWIDTH 1090
-#define WIDGETHEIGHT 940
 
 PaintedWidget::PaintedWidget(QWidget* w) : QWidget(w)
 {
@@ -24,12 +22,14 @@ PaintedWidget::~PaintedWidget()
 void PaintedWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+    // 不同的点的数量规模对应不同的像素
     if (pointsNumber > 50000) penPixel = 1;
     else if (pointsNumber <= 5000) penPixel = 4;
     else penPixel = 2;
 
     if (readyToDrawPoints){
         painter.setPen(QPen(QColor(0, 0, 0), penPixel)); // 设置画笔
+        // 随机产生点
         for (int i=0; i<pointsNumber; ++i)
         {
             pointf[i].setX(qrand()%WIDGETWIDTH + 5);
@@ -56,12 +56,12 @@ void PaintedWidget::paintEvent(QPaintEvent *event)
 
         // 直线无锯齿
         painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setPen(QPen(QColor(0, 160, 230), 2));
+        painter.setPen(QPen(QColor(255, 0, 0), 2));
         painter.drawLine(pointf[pa], pointf[pb]);
 
-        // 画圆
-        painter.setPen(QPen(QColor(255, 0, 0), 2));
-        painter.drawEllipse(QPointF((pointf[pa].x() + pointf[pb].x()) / 2, (pointf[pa].y() + pointf[pb].y()) / 2), minDis / 2 + 10, minDis / 2 + 10);
+        // 画圆，将最近点对圈出
+        painter.setPen(QPen(QColor(255, 0, 0), 4));
+        painter.drawEllipse(QPointF((pointf[pa].x() + pointf[pb].x()) / 2, (pointf[pa].y() + pointf[pb].y()) / 2), minDis / 2 + 20, minDis / 2 + 20);
         painted = false;
         addPoint = false;
     }
