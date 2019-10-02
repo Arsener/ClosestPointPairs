@@ -25,6 +25,7 @@ void PaintedWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     if (pointsNumber > 50000) penPixel = 1;
+    else if (pointsNumber <= 500) penPixel = 4;
     else penPixel = 2;
 
     if (readyToDrawPoints){

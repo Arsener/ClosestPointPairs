@@ -4,6 +4,7 @@
 #include "pair.h"
 #include "paintedwidget.h"
 #include "naivethread.h"
+#include "mergethread.h"
 #include <QPointF>
 #include <QString>
 #include <QPalette>
@@ -35,6 +36,7 @@ private slots:
     void clear();
     void generatePointsRandomly();
     void naiveMethod();
+    void mergeMethod();
     void drawLine(Pair);
     void showTime(double);
     void addPointsByMouse();
@@ -50,6 +52,7 @@ private:
     bool painted = false;
     int pointNumber;
     NaiveThread *nt;
+    MergeThread *mt;
 
     void clearLabels();
     void mousePressEvent(QMouseEvent *event);

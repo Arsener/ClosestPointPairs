@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 常规方法线程对象
     nt = new NaiveThread();
+    mt = new MergeThread();
     // 将点的数量初始化为0
     pointNumber = 0;
 
@@ -30,12 +31,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->n2Button, SIGNAL(clicked(bool)), this, SLOT(naiveMethod()));
     connect(nt, SIGNAL(returnResult(Pair)), this, SLOT(drawLine(Pair)));
     connect(nt, SIGNAL(returnTime(double)), this, SLOT(showTime(double)));
+
+    connect(ui->nlgnButton, SIGNAL(clicked(bool)), this, SLOT(mergeMethod()));
+    connect(mt, SIGNAL(returnResult(Pair)), this, SLOT(drawLine(Pair)));
+    connect(mt, SIGNAL(returnTime(double)), this, SLOT(showTime(double)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete nt;
+    delete mt;
 }
 
 // 清空画板
@@ -84,6 +90,7 @@ void MainWindow::generatePointsRandomly(){
     mouse = false;
     pointNumber = inputNumber;
 
+    clearLabels();
     ui->paintedWidget->setPointsNumber(pointNumber);
     ui->paintedWidget->setDraw(true);
     ui->paintedWidget->setLink(false);
@@ -106,6 +113,24 @@ void MainWindow::naiveMethod(){
 
     nt->setAttr(pointNumber, ui->paintedWidget->getPoints());
     nt->start();
+}
+
+// 在线程中使用常规方法
+void MainWindow::mergeMethod(){
+    if (finding){
+        QMessageBox::warning(this, "Error!", "Busy now.");
+        return;
+    }
+
+    if (!painted){
+        QMessageBox::warning(this, "Error!", "No points!");
+        return;
+    }
+
+    finding = true;
+
+    mt->setAttr(pointNumber, ui->paintedWidget->getPoints());
+    mt->start();
 }
 
 // 将最近点对连线
@@ -156,6 +181,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
         painted = true;
         ui->paintedWidget->addPoints(nx, ny);
         pointNumber++;
+        clearLabels();
         ui->countLabel->setText(QString::number(pointNumber));
         ui->paintedWidget->setAddPoint(true);
         ui->paintedWidget->setDraw(false);

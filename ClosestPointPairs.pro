@@ -21,14 +21,16 @@ SOURCES += \
     mergethread.cpp \
     naivethread.cpp \
     paintedwidget.cpp \
-    pair.cpp
+    pair.cpp \
+    point.cpp
 
 HEADERS += \
     mainwindow.h \
     mergethread.h \
     naivethread.h \
     paintedwidget.h \
-    pair.h
+    pair.h \
+    point.h
 
 FORMS += \
     mainwindow.ui
