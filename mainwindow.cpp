@@ -80,9 +80,9 @@ void MainWindow::generatePointsRandomly(){
         return;
     }
 
-    if(inputNumber == 0)
+    if(inputNumber < 2)
     {
-        QMessageBox::warning(this, "Error!", "At least one point!");
+        QMessageBox::warning(this, "Error!", "At least two point!");
         return;
     }
 
@@ -109,8 +109,14 @@ void MainWindow::naiveMethod(){
         return;
     }
 
+    if (pointNumber < 2){
+        QMessageBox::warning(this, "Error!", "At least two point!");
+        return;
+    }
+
     finding = true;
 
+    clearLabels();
     nt->setAttr(pointNumber, ui->paintedWidget->getPoints());
     nt->start();
 }
@@ -127,8 +133,15 @@ void MainWindow::mergeMethod(){
         return;
     }
 
+    if (pointNumber < 2){
+        QMessageBox::warning(this, "Error!", "At least two point!");
+        return;
+    }
+
+
     finding = true;
 
+    clearLabels();
     mt->setAttr(pointNumber, ui->paintedWidget->getPoints());
     mt->start();
 }

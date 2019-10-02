@@ -7,6 +7,7 @@ class Point : public QPointF
 {
 public:
     Point();
+//    Point(int index, double x, double y);
     void setIndex(int index);
     int i();
 

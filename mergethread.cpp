@@ -41,6 +41,8 @@ void MergeThread::mergeSortX(QPointF *p, int lt, int rt){
     for (int i = lt; i <= rt; i++){
         p[i] = tmp[i - lt];
     }
+
+    delete [] tmp;
 }
 
 void MergeThread::mergeSortY(Point *p, int lt, int rt){
@@ -48,7 +50,7 @@ void MergeThread::mergeSortY(Point *p, int lt, int rt){
 
     int mid = (lt + rt) / 2;
     mergeSortY(p, lt, mid);
-    mergeSortX(p, mid + 1, rt);
+    mergeSortY(p, mid + 1, rt);
 
     Point *tmp = new Point[rt - lt + 1];
     int i = lt, j = mid + 1, k = 0;
@@ -73,6 +75,8 @@ void MergeThread::mergeSortY(Point *p, int lt, int rt){
     for (int i = lt; i <= rt; i++){
         p[i] = tmp[i - lt];
     }
+
+    delete [] tmp;
 }
 
 
@@ -91,7 +95,7 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
 
         if (dis1 <= dis2 && dis1 <= dis3) return Pair(lt, lt + 1, dis1);
         if (dis2 <= dis1 && dis2 <= dis3) return Pair(lt, rt, dis2);
-        if (dis3 <= dis2 && dis3 <= dis1) return Pair(rt, lt + 1, dis3);
+        if (dis3 <= dis2 && dis3 <= dis1) return Pair(lt + 1, rt, dis3);
     }
 
     //多于三个点，先将所有点一分为二
@@ -99,12 +103,9 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     // 将pointY按照划分情况进行划分
     Point *yLeft = new Point[rt - lt + 1];
     Point *yRight = new Point[rt - lt + 1];
-    int l = 0, r = 0, wallX = pointX[mid].x(), wallY = pointX[mid].y();
-    for(int i = lt; i <= rt; i++){
-        if (pointY[i].x() < wallX) {
-            yLeft[l++] = pointY[i];
-        }
-        else if (pointY[i].x() == wallX && pointY[i].y() <= wallY) {
+    int l = 0, r = 0;
+    for(int i = 0; i <= rt - lt; i++){
+        if (pointY[i].i() <= mid) {
             yLeft[l++] = pointY[i];
         }
         else {
@@ -122,6 +123,7 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     if (leftP.getDis() <= rightP.getDis()) tmpBestPair = leftP;
     else tmpBestPair = rightP;
 
+    double wallX = pointX[mid].x();
     double delta = tmpBestPair.getDis();
     // 将在宽度为2 * delta带子中的点放入一个数组中寻找最近点对
     Point *yInDelta = new Point[rt - lt + 1];
@@ -129,7 +131,7 @@ Pair MergeThread::closestPair(QPointF *pointX, Point *pointY, int lt, int rt){
     int *index = new int[rt - lt + 1];
 
     int cnt = 0;
-    for (int i = lt; i <= rt; i++){
+    for (int i = 0; i <= rt - lt; i++){
         if (pointY[i].x() >= wallX - delta && pointY[i].x() <= wallX + delta){
             yInDelta[cnt] = pointY[i];
             index[cnt++] = pointY[i].i();
